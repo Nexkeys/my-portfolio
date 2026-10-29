@@ -1,0 +1,8 @@
+title: E-commerce and payments
+summary: Online stores and checkout flows with Nigerian and global payment providers, inventory and order tracking.
+includes:
+  - Paystack and card payments
+  - Product and order management
+  - Escrow flows
+  - Receipts and records
+order: 5

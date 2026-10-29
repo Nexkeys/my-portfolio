@@ -1,0 +1,8 @@
+company: Swap
+role: Backend developer
+location: Remote
+start: Jan 2023
+end: Sep 2024
+order: 7
+points:
+  - Contributed to a crypto swap interface with live market rate feeds, focused on backend reliability and clean API design for concurrent swap requests.

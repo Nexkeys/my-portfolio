@@ -1,0 +1,88 @@
+---
+interface Props {
+  profile: { name: string; email: string; location: string; socials: readonly { label: string; url: string | null }[] };
+  hasNotes: boolean;
+}
+const { profile, hasNotes } = Astro.props;
+const year = new Date().getFullYear();
+---
+<footer class="footer">
+  <div class="wrap">
+    <div class="f-top">
+      <div>
+        <p class="mono">Say hello</p>
+        <a href={`mailto:${profile.email}`} class="f-mail link-u">{profile.email}</a>
+      </div>
+      <div class="f-cols">
+        <div>
+          <p class="mono">Site</p>
+          <a href="/work" class="link-u">All work</a>
+          {hasNotes && <a href="/notes" class="link-u">Notes</a>}
+          <button type="button" class="link-u" data-mode-set="techie">Terminal mode</button>
+          <button type="button" class="link-u" data-palette-open>Search <span class="kbd">Ctrl K</span></button>
+        </div>
+        <div>
+          <p class="mono">Elsewhere</p>
+          {profile.socials.map((s) => <a href={s.url ?? '#'} class="link-u" target="_blank" rel="noopener noreferrer me">{s.label}</a>)}
+        </div>
+      </div>
+    </div>
+    <p class="f-word" aria-hidden="true">ernest<span class="accent">.</span>dev</p>
+    <div class="f-bottom mono">
+      <span>&copy; {year} {profile.name}</span>
+      <span><span data-clock>--:--</span> in {profile.location.split(',')[0]}</span>
+      <a href="#main" class="link-u" data-to-top>Back to top</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--line);
+    padding-top: clamp(56px, 8vw, 96px);
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    overflow: hidden;
+  }
+  .f-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .f-mail {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: clamp(24px, 3.4vw, 44px);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+  }
+  .f-cols {
+    display: flex;
+    gap: clamp(40px, 8vw, 120px);
+  }
+  .f-cols div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .f-cols .mono {
+    margin-bottom: 6px;
+  }
+  .f-word {
+    font-size: clamp(64px, 19vw, 300px);
+    font-weight: 600;
+    letter-spacing: -0.07em;
+    line-height: 0.8;
+    margin: clamp(56px, 8vw, 110px) 0 28px -0.04em;
+    white-space: nowrap;
+  }
+  .f-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+</style>

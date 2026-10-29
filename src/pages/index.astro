@@ -1,0 +1,1035 @@
+---
+import Base from '../layouts/Base.astro';
+import Cover from '../components/Cover.astro';
+import MagneticLink from '../components/react/MagneticLink';
+import Stats from '../components/react/Stats';
+import Statement from '../components/react/Statement';
+import Reveal from '../components/react/Reveal';
+import {
+  getExperience,
+  getNotes,
+  getProfile,
+  getProjects,
+  getServices,
+  getSkills,
+  getTestimonials,
+  headlineHtml,
+  statusLabel
+} from '../lib/content';
+
+const profile = await getProfile();
+const [projects, services, experience, skills, testimonials, notes] = await Promise.all([
+  getProjects(),
+  getServices(),
+  getExperience(),
+  getSkills(),
+  getTestimonials(),
+  getNotes()
+]);
+const featured = projects.filter((p) => p.featured);
+const cvUrl = profile.cv ? `/cv/${profile.cv}` : '';
+const stats = profile.stats.map((s) => ({ value: s.value ?? 0, suffix: s.suffix, label: s.label }));
+const first = profile.shortName;
+const levelDots: Record<string, number> = { expert: 4, strong: 3, solid: 2, learning: 1 };
+
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Selected work',
+  itemListElement: featured.map((p, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: new URL(`/work/${p.slug}`, Astro.site).href,
+    name: p.title
+  }))
+};
+---
+<Base gate jsonLd={itemList}>
+  <!-- HERO -->
+  <section class="hero wrap" data-hero aria-labelledby="hero-title">
+    <p class="mono hero-eyebrow" data-hero-fade>
+      <span class={profile.available ? 'dot' : 'dot off'}></span>
+      {profile.available ? profile.availabilityNote : 'Currently heads down on projects'}
+    </p>
+    <h1 id="hero-title" class="hero-title" data-hero-title set:html={headlineHtml(profile.headline)} />
+    <div class="hero-grid">
+      <p class="hero-intro" data-hero-fade>
+        <strong>{profile.name}.</strong> {profile.intro}
+      </p>
+      <div class="hero-cta" data-hero-fade>
+        <MagneticLink client:visible href="#work">See the work <span aria-hidden="true">&darr;</span></MagneticLink>
+        <MagneticLink client:visible href="#contact" className="btn ghost">Start a project</MagneticLink>
+      </div>
+      <div class="hero-stats" data-hero-fade>
+        <Stats client:visible stats={stats} />
+      </div>
+    </div>
+    <div class="hero-foot mono" data-hero-fade>
+      <span>{profile.role}</span>
+      <span class="hide-sm"><span data-clock>--:--</span> in {profile.location}</span>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section id="work" class="section work" aria-labelledby="work-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="mono eyebrow"><span class="n">01</span> Selected work</p>
+          <h2 id="work-title" class="section-title" data-reveal>Things I've <em>shipped</em></h2>
+        </div>
+        <a href="/work" class="mono link-u hide-sm">All {projects.length} projects &rarr;</a>
+      </div>
+
+      <div class="work-list">
+        <ol role="list">
+          {featured.map((p, i) => (
+            <li>
+              <a href={`/work/${p.slug}`} class="w-row" data-preview-src={p.slug} data-cursor="View case study">
+                <span class="w-n mono">{String(i + 1).padStart(2, '0')}</span>
+                <span class="w-title">{p.title}</span>
+                <span class="w-tag">{p.tagline}</span>
+                <span class="w-meta">
+                  <span class={p.status === 'live' ? 'tag live' : 'tag'}>{statusLabel[p.status]}</span>
+                  <span class="tag hide-md">{p.category}</span>
+                </span>
+                <span class="w-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="20" height="20"><path d="M7 17 17 7M8 7h9v9" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                </span>
+                <span class="w-cover-mobile">
+                  <Cover slug={p.slug} title={p.title} category={p.category} image={p.cover} />
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+        <div class="w-preview" data-preview aria-hidden="true">
+          {featured.map((p) => (
+            <div class="w-preview-item" data-preview-item={p.slug}>
+              <Cover slug={p.slug} title={p.title} category={p.category} image={p.cover} />
+            </div>
+          ))}
+        </div>
+      </div>
+      <a href="/work" class="btn ghost all-btn">See all {projects.length} projects <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </section>
+
+  <!-- STATEMENT -->
+  <section class="statement-wrap wrap" aria-label="Philosophy">
+    <Statement client:visible text={profile.statement} />
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services" class="section services" aria-labelledby="services-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="mono eyebrow"><span class="n">02</span> Services</p>
+          <h2 id="services-title" class="section-title" data-reveal>How I can <em>help</em></h2>
+        </div>
+        <p class="services-lede hide-sm" data-reveal>From a single landing page to a full product team of one. Every engagement starts with a conversation about the outcome, not the tech.</p>
+      </div>
+      <ol class="svc-grid" role="list" data-stagger>
+        {services.map((s, i) => (
+          <li class="svc">
+            <span class="mono svc-n">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="svc-title">{s.title}</h3>
+            <p class="svc-sum">{s.summary}</p>
+            <ul class="svc-inc" role="list">
+              {s.includes.map((x) => <li>{x}</li>)}
+            </ul>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="section about" aria-labelledby="about-title">
+    <div class="wrap about-grid">
+      <div class="about-side">
+        <p class="mono eyebrow"><span class="n">03</span> About</p>
+        <h2 id="about-title" class="section-title" data-reveal>Hi, I'm <em>{first}</em>.</h2>
+        <dl class="facts" data-stagger>
+          <div><dt class="mono">Based in</dt><dd>{profile.location}</dd></div>
+          <div><dt class="mono">Local time</dt><dd><span data-clock>--:--</span> WAT</dd></div>
+          <div><dt class="mono">Runs</dt><dd><a href="https://nexkeysagency.com.ng" target="_blank" rel="noopener noreferrer" class="link-u">NexKeys</a></dd></div>
+          <div><dt class="mono">Status</dt><dd><span class={profile.available ? 'dot' : 'dot off'}></span> {profile.available ? 'Open to work' : 'Booked'}</dd></div>
+        </dl>
+      </div>
+      <div class="about-body">
+        {profile.about.map((p, i) => <p data-reveal data-reveal-delay={String(i * 0.05)}>{p}</p>)}
+        <div class="about-cta" data-reveal>
+          {cvUrl && <a href={cvUrl} class="btn" download>Download CV <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></a>}
+          <a href={`https://github.com/${profile.github}`} class="btn ghost" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience" class="section experience" aria-labelledby="exp-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="mono eyebrow"><span class="n">04</span> Experience</p>
+          <h2 id="exp-title" class="section-title" data-reveal>Where I've <em>worked</em></h2>
+        </div>
+      </div>
+      <ol class="timeline" role="list">
+        {experience.map((j) => (
+          <li class="job" data-reveal>
+            <div class="job-when mono">{j.start ? `${j.start} to ${j.end || 'now'}` : 'Current'}</div>
+            <div class="job-main">
+              <h3 class="job-title">
+                {j.url ? <a href={j.url} target="_blank" rel="noopener noreferrer" class="link-u">{j.company}</a> : j.company}
+                {!j.end && <span class="tag live">Now</span>}
+              </h3>
+              <p class="job-role">{j.role} <span class="mute">· {j.location}</span></p>
+              <ul class="job-points" role="list">
+                {j.points.map((pt) => <li>{pt}</li>)}
+              </ul>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- SKILLS + GITHUB -->
+  <section class="section skills" aria-labelledby="skills-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="mono eyebrow"><span class="n">05</span> Toolkit</p>
+          <h2 id="skills-title" class="section-title" data-reveal>What I <em>work with</em></h2>
+        </div>
+        <p class="mono legend hide-sm"><span class="lv"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span> Expert <span class="lv"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> Strong <span class="lv"><i class="on"></i><i class="on"></i><i></i><i></i></span> Solid</p>
+      </div>
+      <div class="skill-grid" data-stagger>
+        {skills.map((g) => (
+          <div class="skill-group">
+            <h3 class="mono">{g.name}</h3>
+            <ul role="list">
+              {g.items.map((s) => (
+                <li>
+                  <span>{s.name}</span>
+                  <span class="lv" aria-label={s.level}>
+                    {[0, 1, 2, 3].map((n) => <i class={n < (levelDots[s.level] ?? 2) ? 'on' : ''}></i>)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div class="gh" data-github={profile.github} data-reveal>
+        <div class="gh-head">
+          <p class="mono"><span class="dot"></span> Live from GitHub</p>
+          <a href={`https://github.com/${profile.github}`} class="mono link-u" target="_blank" rel="noopener noreferrer">@{profile.github} &nearr;</a>
+        </div>
+        <div class="gh-body">
+          <dl class="gh-stats">
+            <div><dt class="mono">Public repos</dt><dd data-gh-repos>&nbsp;</dd></div>
+            <div><dt class="mono">Followers</dt><dd data-gh-followers>&nbsp;</dd></div>
+            <div><dt class="mono">Last push</dt><dd data-gh-since>&nbsp;</dd></div>
+          </dl>
+          <div class="gh-list" data-gh-list>
+            <span class="gh-skel"></span><span class="gh-skel"></span><span class="gh-skel"></span>
+          </div>
+        </div>
+        <p class="gh-fail mono">GitHub is not answering right now. Visit the profile directly.</p>
+      </div>
+    </div>
+  </section>
+
+  {testimonials.length > 0 && (
+    <section class="section quotes" aria-labelledby="quotes-title">
+      <div class="wrap">
+        <p class="mono eyebrow"><span class="n">06</span> Kind words</p>
+        <h2 id="quotes-title" class="section-title" data-reveal>From the <em>people</em> I build for</h2>
+        <div class="quote-grid" data-stagger>
+          {testimonials.map((t) => (
+            <figure class="quote">
+              <blockquote>&ldquo;{t.quote}&rdquo;</blockquote>
+              <figcaption><strong>{t.name}</strong><span class="mono">{t.role}</span></figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {notes.length > 0 && (
+    <section class="section notes-home" aria-labelledby="notes-title">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="mono eyebrow">Notes</p>
+            <h2 id="notes-title" class="section-title" data-reveal>Latest <em>writing</em></h2>
+          </div>
+          <a href="/notes" class="mono link-u">All notes &rarr;</a>
+        </div>
+        <ul class="note-list" role="list">
+          {notes.slice(0, 3).map((n) => (
+            <li data-reveal>
+              <a href={`/notes/${n.slug}`} class="note-row">
+                <span class="mono">{n.date}</span>
+                <span class="note-title">{n.title}</span>
+                <span class="note-ex">{n.excerpt}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <!-- CONTACT -->
+  <section id="contact" class="section contact" aria-labelledby="contact-title">
+    <div class="wrap">
+      <p class="mono eyebrow"><span class="dot"></span> {profile.available ? 'Taking on new work' : 'Waitlist open'}</p>
+      <Reveal client:visible tag="h2" className="contact-title" text="Let's build something good." />
+      <span id="contact-title" class="sr-only">Contact</span>
+
+      <div class="contact-grid">
+        <form class="c-form" data-contact data-email={profile.email} data-whatsapp={profile.whatsapp} data-first={first} data-reveal>
+          <div class="field">
+            <label for="c-name" class="mono">Your name</label>
+            <input id="c-name" name="name" type="text" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label for="c-subject" class="mono">Subject</label>
+            <input id="c-subject" name="subject" type="text" placeholder="A new website, an app, a role..." required />
+          </div>
+          <div class="field">
+            <label for="c-message" class="mono">Message</label>
+            <textarea id="c-message" name="message" rows="5" placeholder="What are you building, and when do you need it?" required></textarea>
+          </div>
+          <div class="c-actions">
+            <button type="submit" class="btn" value="email">Send by email <span aria-hidden="true">&rarr;</span></button>
+            <button type="submit" class="btn ghost" value="whatsapp">Send on WhatsApp</button>
+          </div>
+          <p class="c-note mono">Opens your own mail app or WhatsApp with everything filled in. Nothing is stored here.</p>
+        </form>
+
+        <div class="c-direct" data-stagger>
+          <a href={`mailto:${profile.email}`} class="c-link" data-cursor="Write an email">
+            <span class="mono">Email</span><span>{profile.email}</span>
+          </a>
+          <a href={`https://wa.me/${profile.whatsapp}`} class="c-link" target="_blank" rel="noopener noreferrer" data-cursor="Open WhatsApp">
+            <span class="mono">WhatsApp</span><span>{profile.phone}</span>
+          </a>
+          {profile.bookingUrl && (
+            <a href={profile.bookingUrl} class="c-link" target="_blank" rel="noopener noreferrer" data-cursor="Pick a time">
+              <span class="mono">Call</span><span>Book a 30 minute call</span>
+            </a>
+          )}
+          {cvUrl && (
+            <a href={cvUrl} class="c-link" download>
+              <span class="mono">CV</span><span>Download PDF</span>
+            </a>
+          )}
+          <div class="c-socials">
+            {profile.socials.map((s) => <a href={s.url ?? '#'} class="tag" target="_blank" rel="noopener noreferrer me">{s.label}</a>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* hero */
+  .hero {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-top: 120px;
+    padding-bottom: 28px;
+  }
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: clamp(20px, 3vw, 32px);
+  }
+  .hero-title {
+    font-size: clamp(58px, 12.2vw, 196px);
+    font-weight: 600;
+    letter-spacing: -0.058em;
+    line-height: 0.86;
+    max-width: 12ch;
+  }
+  .hero-title :global(em) {
+    letter-spacing: -0.03em;
+    padding-right: 0.04em;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr auto 1fr;
+    align-items: start;
+    gap: 40px;
+    margin-top: clamp(36px, 5vw, 64px);
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  .hero-intro {
+    font-size: clamp(17px, 1.45vw, 20px);
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+    max-width: 36ch;
+    color: var(--fg-2);
+  }
+  .hero-intro strong {
+    color: var(--fg);
+    font-weight: 600;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .hero-stats {
+    justify-self: end;
+  }
+  .hero-stats :global(.stats) {
+    display: flex;
+    gap: clamp(24px, 3vw, 48px);
+    margin: 0;
+  }
+  .hero-stats :global(.stat) {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 4px;
+  }
+  .hero-stats :global(dd) {
+    margin: 0;
+    font-size: clamp(38px, 3.6vw, 52px);
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+  .hero-foot {
+    display: flex;
+    justify-content: space-between;
+    margin-top: clamp(40px, 6vw, 72px);
+  }
+
+  /* work */
+  .work-list {
+    position: relative;
+  }
+  .work-list ol {
+    border-bottom: 1px solid var(--line);
+  }
+  .w-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1.1fr) minmax(0, 1.4fr) auto 32px;
+    align-items: center;
+    gap: 24px;
+    padding: clamp(22px, 2.6vw, 34px) 0;
+    border-top: 1px solid var(--line);
+    transition: padding 0.5s var(--ease), color 0.3s;
+  }
+  .w-row::before {
+    content: '';
+    position: absolute;
+    inset: 0 calc(var(--gutter) * -1);
+    background: var(--fg);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.55s var(--ease);
+    z-index: -1;
+  }
+  .w-title {
+    font-size: clamp(28px, 3.4vw, 48px);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .w-tag {
+    color: var(--mute);
+    font-size: 16px;
+    transition: color 0.3s;
+  }
+  .w-meta {
+    display: flex;
+    gap: 6px;
+  }
+  .w-arrow {
+    justify-self: end;
+    transition: transform 0.5s var(--ease);
+  }
+  .w-cover-mobile {
+    display: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .w-row:hover {
+      color: var(--bg);
+      padding-left: 16px;
+    }
+    .w-row:hover::before {
+      transform: scaleY(1);
+      transform-origin: top;
+    }
+    .w-row:hover .w-tag {
+      color: color-mix(in srgb, var(--bg) 65%, transparent);
+    }
+    .w-row:hover .tag {
+      border-color: color-mix(in srgb, var(--bg) 25%, transparent);
+      color: color-mix(in srgb, var(--bg) 75%, transparent);
+    }
+    .w-row:hover .w-arrow {
+      transform: rotate(45deg);
+      color: var(--accent);
+    }
+  }
+  .w-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: min(380px, 30vw);
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0;
+    transform: scale(0.6);
+    margin: -120px 0 0 -190px;
+    display: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .w-preview {
+      display: block;
+    }
+  }
+  .w-preview-item {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.3s;
+    box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.45);
+    border-radius: 14px;
+  }
+  .w-preview-item.on {
+    opacity: 1;
+  }
+  .all-btn {
+    margin-top: 32px;
+  }
+
+  /* statement */
+  .statement-wrap {
+    padding-block: clamp(40px, 8vw, 120px);
+  }
+  .statement-wrap :global(.statement) {
+    margin: 0;
+  }
+  .statement-wrap :global(.statement-text) {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(36px, 5.6vw, 88px);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    max-width: 18ch;
+  }
+
+  /* services */
+  .services-lede {
+    max-width: 38ch;
+    color: var(--fg-2);
+  }
+  .svc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+  .svc {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: clamp(24px, 2.6vw, 36px);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    min-height: 320px;
+    transition: background-color 0.4s;
+  }
+  .svc:hover {
+    background: var(--card);
+  }
+  .svc-n {
+    color: var(--accent);
+  }
+  .svc-title {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-top: 28px;
+  }
+  .svc-sum {
+    color: var(--fg-2);
+    font-size: 16px;
+  }
+  .svc-inc {
+    margin-top: auto;
+    padding-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .svc-inc li {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--mute);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 9px;
+  }
+
+  /* about */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: clamp(40px, 8vw, 120px);
+  }
+  .facts {
+    margin: 40px 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 420px;
+  }
+  .facts dd {
+    margin: 6px 0 0;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .about-body p {
+    font-size: clamp(19px, 1.8vw, 24px);
+    line-height: 1.45;
+    letter-spacing: -0.012em;
+    color: var(--fg-2);
+  }
+  .about-body p:first-child {
+    color: var(--fg);
+  }
+  .about-body p + p {
+    margin-top: 1.1em;
+  }
+  .about-cta {
+    display: flex;
+    gap: 10px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  /* experience */
+  .timeline {
+    border-top: 1px solid var(--line);
+  }
+  .job {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 32px;
+    padding: 32px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .job-when {
+    padding-top: 8px;
+  }
+  .job-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: clamp(24px, 2.6vw, 34px);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+  }
+  .job-role {
+    margin-top: 6px;
+    color: var(--fg-2);
+  }
+  .mute {
+    color: var(--mute);
+  }
+  .job-points {
+    margin-top: 16px;
+    display: grid;
+    gap: 8px;
+    max-width: 72ch;
+  }
+  .job-points li {
+    position: relative;
+    padding-left: 22px;
+    color: var(--fg-2);
+    font-size: 16px;
+  }
+  .job-points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 10px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  /* skills */
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .lv {
+    display: inline-flex;
+    gap: 3px;
+  }
+  .lv i {
+    width: 6px;
+    height: 6px;
+    border-radius: 2px;
+    background: var(--line-2);
+  }
+  .lv i.on {
+    background: var(--fg);
+  }
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 32px;
+  }
+  .skill-group h3 {
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 8px;
+  }
+  .skill-group li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 0;
+    font-size: 15.5px;
+  }
+  .gh {
+    margin-top: clamp(56px, 7vw, 96px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: clamp(20px, 3vw, 32px);
+    background: var(--card);
+  }
+  .gh-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  .gh-head p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .gh-body {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: clamp(24px, 5vw, 72px);
+    align-items: center;
+  }
+  .gh-stats {
+    display: flex;
+    gap: clamp(24px, 3vw, 48px);
+    margin: 0;
+  }
+  .gh-stats dd {
+    margin: 4px 0 0;
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    min-width: 2ch;
+  }
+  .gh-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .gh-list :global(.gh-repo) {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    transition: border-color 0.3s;
+  }
+  .gh-list :global(.gh-repo:hover) {
+    border-color: var(--fg);
+  }
+  .gh-skel {
+    height: 58px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--line), transparent, var(--line));
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+  }
+  @keyframes shimmer {
+    to {
+      background-position: -200% 0;
+    }
+  }
+  .gh-fail {
+    display: none;
+    margin-top: 12px;
+  }
+  .gh:global(.failed) .gh-fail {
+    display: block;
+  }
+  .gh:global(.failed) .gh-body {
+    display: none;
+  }
+
+  /* testimonials */
+  .quote-grid {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .quote {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 28px;
+  }
+  .quote blockquote {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: 26px;
+    line-height: 1.25;
+  }
+  .quote figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* notes */
+  .note-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 1.2fr;
+    gap: 24px;
+    padding: 24px 0;
+    border-top: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .note-title {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  .note-ex {
+    color: var(--mute);
+  }
+
+  /* contact */
+  .contact :global(.split-word-mask) {
+    padding-bottom: 0.18em;
+    margin-bottom: -0.18em;
+  }
+  .contact :global(.contact-title) {
+    font-size: clamp(54px, 10vw, 168px);
+    font-weight: 600;
+    letter-spacing: -0.055em;
+    line-height: 0.9;
+    max-width: 11ch;
+    margin: 0;
+    padding-bottom: 0.12em;
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: clamp(40px, 7vw, 110px);
+    margin-top: clamp(48px, 6vw, 80px);
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line-2);
+    transition: border-color 0.3s;
+  }
+  .field:focus-within {
+    border-color: var(--fg);
+  }
+  .field input,
+  .field textarea {
+    font: inherit;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+    background: none;
+    border: 0;
+    outline: 0;
+    color: var(--fg);
+    padding: 0;
+    resize: vertical;
+  }
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: var(--mute);
+    opacity: 0.7;
+  }
+  .c-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+  }
+  .c-note {
+    margin-top: 16px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .c-direct {
+    display: flex;
+    flex-direction: column;
+  }
+  .c-link {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: clamp(20px, 2vw, 26px);
+    letter-spacing: -0.025em;
+    font-weight: 500;
+    transition: padding 0.4s var(--ease), color 0.3s;
+    overflow-wrap: anywhere;
+  }
+  .c-link:hover {
+    padding-left: 10px;
+    color: var(--accent);
+  }
+  .c-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 24px;
+  }
+  .c-socials .tag:hover {
+    color: var(--fg);
+    border-color: var(--fg);
+  }
+
+  /* responsive */
+  @media (max-width: 1100px) {
+    .hero-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .hero-stats {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+    .skill-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .svc-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .w-row {
+      grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1.2fr) 32px;
+    }
+    .w-meta {
+      display: none;
+    }
+    .hide-md {
+      display: none;
+    }
+  }
+  @media (max-width: 760px) {
+    .hide-sm {
+      display: none !important;
+    }
+    .hero {
+      min-height: 0;
+      padding-top: 128px;
+    }
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+    .hero-cta :global(.btn) {
+      height: 48px;
+      padding: 0 20px;
+    }
+    .w-row {
+      grid-template-columns: 32px minmax(0, 1fr) 24px;
+      gap: 12px 14px;
+      padding: 22px 0;
+    }
+    .w-tag {
+      grid-column: 2 / 3;
+      grid-row: 2;
+      font-size: 15px;
+    }
+    .w-cover-mobile {
+      display: block;
+      grid-column: 1 / -1;
+      margin-top: 6px;
+    }
+    .svc-grid {
+      grid-template-columns: 1fr;
+    }
+    .svc {
+      min-height: 0;
+    }
+    .svc-title {
+      margin-top: 8px;
+    }
+    .about-grid,
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+    .job {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .skill-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 28px 20px;
+    }
+    .gh-body {
+      grid-template-columns: 1fr;
+    }
+    .gh-list {
+      grid-template-columns: 1fr;
+    }
+    .gh-stats dd {
+      font-size: 32px;
+    }
+    .note-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  @media (max-width: 420px) {
+    .skill-grid {
+      grid-template-columns: 1fr;
+    }
+    .c-actions :global(.btn) {
+      width: 100%;
+    }
+  }
+</style>

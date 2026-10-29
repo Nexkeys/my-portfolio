@@ -1,0 +1,30 @@
+---
+title: Axion
+tagline: A private, always on personal AI assistant.
+summary: >-
+  A voice first assistant with wake word detection, offline speech to text, an
+  online brain on Groq and a local fallback on Ollama, plus PC and Android
+  control. Everything is stored locally in SQLite.
+category: AI
+role: Creator
+year: '2026'
+status: open-source
+client: false
+featured: false
+order: 8
+liveUrl: ''
+repoUrl: https://github.com/Nexkeys/axion-ai
+links: []
+stack:
+  - Python
+  - Groq
+  - Ollama
+  - Vosk
+  - Streamlit
+  - SQLite
+highlights:
+  - Wake word with openWakeWord and offline transcription with Vosk.
+  - Routes each request to an online model or a local one when offline.
+  - Controls Windows and Android devices through a JSON command registry.
+---
+Axion runs as a background daemon that listens for a wake word, transcribes the command and routes it to the right brain. Commands are mapped through an extensible registry, so new actions are a JSON entry rather than new code. A Streamlit dashboard talks to the daemon over a local socket for status and quick commands.

@@ -1,0 +1,168 @@
+---
+interface Props {
+  profile: { email: string; whatsapp: string; github: string; bookingUrl: string | null };
+  projects: { slug: string; title: string; tagline: string }[];
+  cvUrl: string;
+  hasNotes: boolean;
+}
+const { profile, projects, cvUrl, hasNotes } = Astro.props;
+type Item = { label: string; hint: string; group: string; href?: string; action?: string; external?: boolean; keywords?: string };
+const items: Item[] = [
+  { label: 'Start a project', hint: 'Contact', group: 'Actions', href: '/#contact', keywords: 'hire email whatsapp message' },
+  { label: 'Copy email address', hint: profile.email, group: 'Actions', action: 'copy-email' },
+  { label: 'Chat on WhatsApp', hint: 'Opens WhatsApp', group: 'Actions', href: `https://wa.me/${profile.whatsapp}`, external: true },
+  ...(profile.bookingUrl ? [{ label: 'Book a call', hint: 'Calendar', group: 'Actions', href: profile.bookingUrl, external: true }] : []),
+  ...(cvUrl ? [{ label: 'Download CV', hint: 'PDF', group: 'Actions', href: cvUrl, action: 'download' }] : []),
+  { label: 'Switch to terminal mode', hint: 'Techie', group: 'Actions', action: 'techie', keywords: 'cli shell console' },
+  { label: 'Toggle light and dark', hint: 'Theme', group: 'Actions', action: 'theme', keywords: 'dark mode light mode' },
+  { label: 'Selected work', hint: 'Section', group: 'Go to', href: '/#work' },
+  { label: 'All projects', hint: 'Page', group: 'Go to', href: '/work' },
+  { label: 'Services', hint: 'Section', group: 'Go to', href: '/#services' },
+  { label: 'About', hint: 'Section', group: 'Go to', href: '/#about' },
+  { label: 'Experience', hint: 'Section', group: 'Go to', href: '/#experience' },
+  ...(hasNotes ? [{ label: 'Notes', hint: 'Page', group: 'Go to', href: '/notes' }] : []),
+  { label: 'GitHub', hint: `@${profile.github}`, group: 'Go to', href: `https://github.com/${profile.github}`, external: true },
+  ...projects.map((p) => ({ label: p.title, hint: p.tagline, group: 'Projects', href: `/work/${p.slug}`, keywords: p.slug }))
+];
+---
+<div class="palette" data-palette hidden>
+  <div class="p-backdrop" data-palette-close></div>
+  <div class="p-panel" role="dialog" aria-modal="true" aria-label="Command palette">
+    <div class="p-search">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="Jump to anything..." aria-label="Search" data-palette-input autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="palette-list" />
+      <span class="kbd">Esc</span>
+    </div>
+    <ul class="p-list" id="palette-list" role="listbox" data-palette-list></ul>
+    <div class="p-foot mono"><span>↑ ↓ to move</span><span>Enter to open</span></div>
+  </div>
+</div>
+<script type="application/json" id="palette-data" set:html={JSON.stringify(items)} />
+
+<style>
+  .palette {
+    position: fixed;
+    inset: 0;
+    z-index: 260;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 12vh 16px 16px;
+  }
+  .palette[hidden] {
+    display: none;
+  }
+  .p-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 11, 0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    animation: fade 0.25s ease-out;
+  }
+  .p-panel {
+    position: relative;
+    width: min(640px, 100%);
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    background: color-mix(in srgb, #141415 94%, transparent);
+    color: #ece9e2;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 18px;
+    box-shadow: 0 50px 120px -20px rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+    animation: pop 0.35s var(--ease);
+  }
+  .p-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    color: #8a877f;
+  }
+  .p-search input {
+    flex: 1;
+    background: none;
+    border: 0;
+    outline: 0;
+    color: #fff;
+    font: inherit;
+    font-size: 17px;
+  }
+  .p-search .kbd {
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #8a877f;
+  }
+  .p-list {
+    list-style: none;
+    margin: 0;
+    padding: 8px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .p-list :global(.p-group) {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6f6c66;
+    padding: 12px 12px 6px;
+  }
+  .p-list :global(.p-item) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 11px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .p-list :global(.p-item small) {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #6f6c66;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 50%;
+  }
+  .p-list :global(.p-item[aria-selected='true']) {
+    background: rgba(255, 90, 31, 0.14);
+  }
+  .p-list :global(.p-item[aria-selected='true'] small) {
+    color: #ff8a5c;
+  }
+  .p-list :global(.p-empty) {
+    padding: 24px 12px;
+    color: #6f6c66;
+  }
+  .p-foot {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    color: #6f6c66;
+    font-size: 11px;
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.98);
+    }
+  }
+  @media (max-width: 600px) {
+    .palette {
+      padding-top: 10vh;
+    }
+    .p-foot {
+      display: none;
+    }
+  }
+</style>

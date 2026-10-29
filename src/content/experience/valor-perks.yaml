@@ -1,0 +1,10 @@
+company: Valor Perks
+role: Full stack developer
+location: Remote
+start: May 2024
+end: Dec 2025
+order: 4
+points:
+  - Built a token based trading platform where users buy tokens and convert them to real earnings, from the React frontend to the PostgreSQL backend.
+  - Integrated encrypted payment gateways and fraud prevention logic, reducing failed transactions.
+  - Implemented realtime token valuation and automated payout workflows.

@@ -1,0 +1,8 @@
+title: Mobile apps
+summary: Android and cross platform apps with React Native and Expo, from first build to the Play Store.
+includes:
+  - React Native and Expo
+  - Offline friendly data
+  - Push notifications
+  - Store release
+order: 3

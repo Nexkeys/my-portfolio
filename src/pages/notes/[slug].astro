@@ -1,0 +1,53 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getNotes, renderBody } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const notes = await getNotes();
+  return notes.map((n) => ({ params: { slug: n.slug }, props: { slug: n.slug } }));
+}
+const { slug } = Astro.props;
+const note = (await getNotes()).find((n) => n.slug === slug)!;
+const html = await renderBody(note.body);
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: note.title,
+  description: note.excerpt,
+  datePublished: note.date,
+  author: { '@id': `${Astro.site!.origin}/#person` },
+  mainEntityOfPage: new URL(`/notes/${slug}`, Astro.site).href
+};
+---
+<Base title={note.title} description={note.excerpt} type="article" jsonLd={ld}>
+  <article class="wrap note">
+    <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/notes" class="link-u">Notes</a> / <time datetime={note.date ?? ''}>{note.date}</time></nav>
+    <h1 class="title">{note.title}</h1>
+    <p class="lede">{note.excerpt}</p>
+    <div class="prose" set:html={html} />
+  </article>
+</Base>
+<style>
+  .note {
+    padding-top: clamp(130px, 17vw, 190px);
+    padding-bottom: 120px;
+    max-width: 900px;
+  }
+  .crumbs {
+    margin-bottom: 24px;
+  }
+  .title {
+    font-size: clamp(44px, 7vw, 96px);
+    font-weight: 600;
+    letter-spacing: -0.05em;
+    line-height: 0.95;
+  }
+  .lede {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(24px, 2.6vw, 34px);
+    line-height: 1.2;
+    margin: 24px 0 56px;
+    color: var(--fg-2);
+  }
+</style>

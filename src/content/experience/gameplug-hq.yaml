@@ -1,0 +1,10 @@
+company: GamePlug HQ
+role: Full stack developer
+url: https://gameplugvault.netlify.app
+location: Remote, Ikeja
+start: Apr 2025
+end: Aug 2025
+order: 5
+points:
+  - Built a peer to peer gaming account marketplace with escrow protected transactions, automated fund release and buyer protection.
+  - Integrated Paystack and mobile money channels to reach the widest possible audience.

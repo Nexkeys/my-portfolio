@@ -1,0 +1,8 @@
+title: Web apps and SaaS
+summary: Full stack products that hold up under real users. Dashboards, marketplaces, booking systems and SaaS, built to scale from day one.
+includes:
+  - Product architecture
+  - Auth, roles and payments
+  - Realtime features
+  - Admin dashboards
+order: 1

@@ -1,0 +1,66 @@
+---
+import { COOKIE, adminPassword, checkPassword, createSession, isValidSession } from '../../lib/auth';
+
+export const prerender = false;
+
+const next = Astro.url.searchParams.get('next')?.startsWith('/keystatic') ? Astro.url.searchParams.get('next')! : '/keystatic';
+let error = '';
+
+if (isValidSession(Astro.cookies.get(COOKIE)?.value)) return Astro.redirect(next);
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const password = String(form.get('password') ?? '');
+  if (checkPassword(password)) {
+    const session = createSession();
+    Astro.cookies.set(COOKIE, session.value, {
+      path: '/',
+      httpOnly: true,
+      secure: import.meta.env.PROD,
+      sameSite: 'lax',
+      maxAge: session.maxAge
+    });
+    return Astro.redirect(next);
+  }
+  await new Promise((r) => setTimeout(r, 800));
+  error = adminPassword() ? 'That password is not right.' : 'ADMIN_PASSWORD is not set on the server yet.';
+}
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin | ernest.dev</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100svh; display: grid; place-items: center; background: #0d0d0e; color: #f2f0eb; font: 16px/1.5 system-ui, -apple-system, sans-serif; padding: 20px; }
+      form { width: min(380px, 100%); }
+      .mark { width: 40px; height: 40px; border-radius: 12px; background: #f2f0eb; color: #0d0d0e; display: grid; place-items: center; font: italic 26px Georgia, serif; margin-bottom: 28px; }
+      h1 { font-size: 30px; letter-spacing: -0.03em; margin: 0 0 6px; font-weight: 600; }
+      p { margin: 0 0 28px; color: #85827a; }
+      label { display: block; font: 12px ui-monospace, monospace; text-transform: uppercase; letter-spacing: 0.05em; color: #85827a; margin-bottom: 8px; }
+      input { width: 100%; height: 52px; border-radius: 12px; border: 1px solid #2a2a2c; background: #141415; color: #fff; padding: 0 16px; font: inherit; font-size: 16px; outline: none; }
+      input:focus { border-color: #ff5a1f; }
+      button { width: 100%; height: 52px; border: 0; border-radius: 999px; background: #f2f0eb; color: #0d0d0e; font: inherit; font-weight: 600; margin-top: 14px; cursor: pointer; }
+      button:hover { background: #ff5a1f; color: #fff; }
+      .err { color: #ff6b6b; font-size: 14px; margin: 12px 0 0; }
+      a { color: #85827a; font-size: 14px; display: inline-block; margin-top: 24px; }
+    </style>
+  </head>
+  <body>
+    <form method="post">
+      <div class="mark" aria-hidden="true">E</div>
+      <h1>Admin panel</h1>
+      <p>Enter your password to edit the site.</p>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required autofocus />
+      {error && <p class="err" role="alert">{error}</p>}
+      <button type="submit">Unlock</button>
+      <a href="/">Back to the site</a>
+    </form>
+  </body>
+</html>
