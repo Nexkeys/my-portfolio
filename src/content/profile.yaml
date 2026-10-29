@@ -1,0 +1,60 @@
+name: Ernest Uwaoma
+shortName: Ernest
+role: Full stack software engineer
+headline: I build software that *actually* [ships.]
+intro: >-
+  Full stack engineer and founder of NexKeys. I take products from the first
+  brief to production, for businesses in Nigeria and teams anywhere in the world.
+about:
+  - >-
+    I started coding at 14 and have worked with real clients since 2020. Since
+    then I have shipped trading platforms, marketplaces, business tools, developer
+    tools and realtime multiplayer systems, and I still enjoy the moment a
+    product goes live more than anything else in this job.
+  - >-
+    I run NexKeys, the studio I ship most of my work through, and I build
+    Sellapage, a business platform used by Nigerian entrepreneurs on the web and
+    on Android. I am comfortable owning a project end to end: architecture,
+    backend, frontend, payments, deployment and the support that comes after.
+  - >-
+    Lately I spend a lot of time on AI tooling: local first coding assistants,
+    codebase mapping and agent workflows that people can actually trust.
+statement: >-
+  Good software is not the code you write. It is the problem that quietly stops
+  existing for the people who use it.
+location: Lagos, Nigeria
+timezone: Africa/Lagos
+available: true
+availabilityNote: Available for remote roles and select projects
+email: ernestuwaoma3@gmail.com
+phone: +234 803 300 4474
+whatsapp: '2348033004474'
+bookingUrl: ''
+github: Nexkeys
+socials:
+  - label: GitHub
+    url: https://github.com/Nexkeys
+  - label: LinkedIn
+    url: https://www.linkedin.com/in/ernest-uwaoma-183338344
+  - label: X
+    url: https://x.com/ErnestUwao93281
+  - label: Instagram
+    url: https://www.instagram.com/icekeys_854
+  - label: Facebook
+    url: https://www.facebook.com/profile.php?id=61583154317887
+stats:
+  - value: 6
+    suffix: +
+    label: Years shipping
+  - value: 15
+    suffix: +
+    label: Products shipped
+  - value: 13
+    suffix: +
+    label: Clients served
+cv: ernest-uwaoma-developer-cv.pdf
+seoTitle: Ernest Uwaoma, Full Stack Software Engineer in Lagos
+seoDescription: >-
+  Ernest Uwaoma is a full stack software engineer and founder of NexKeys in Lagos,
+  Nigeria. He builds web apps, mobile apps, developer tools and AI products, from
+  Sellapage to Dahl Studio. Available for remote work.

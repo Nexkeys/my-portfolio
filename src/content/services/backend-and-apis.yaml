@@ -1,0 +1,8 @@
+title: Backend and APIs
+summary: Secure, well documented backends on Firebase, Supabase or Node. The part users never see but always feel.
+includes:
+  - REST APIs and webhooks
+  - Database design and security rules
+  - Rate limiting and auth
+  - Integrations
+order: 6

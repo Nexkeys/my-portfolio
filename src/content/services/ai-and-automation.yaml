@@ -1,0 +1,8 @@
+title: AI and automation
+summary: AI features and tools that do real work. Assistants, agent workflows, codebase tools and automations wired into your stack.
+includes:
+  - LLM integration
+  - Local and private models
+  - Agents and MCP tools
+  - Workflow automation
+order: 4

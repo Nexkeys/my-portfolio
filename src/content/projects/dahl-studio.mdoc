@@ -1,0 +1,44 @@
+---
+title: Dahl Studio
+tagline: A local first AI coding studio for Windows.
+summary: >-
+  A desktop coding studio powered by the Dahl API and other model providers.
+  Agents plan, edit and run code with diff approvals, checkpoints and MCP tools,
+  while your project stays plain files on your own machine.
+category: Developer tool
+role: Creator
+year: '2026'
+status: open-source
+client: false
+featured: true
+order: 5
+liveUrl: ''
+repoUrl: https://github.com/Nexkeys/dahl-studio
+links:
+  - label: Download the latest release
+    url: https://github.com/Nexkeys/dahl-studio/releases
+stack:
+  - Electron
+  - React
+  - TypeScript
+  - Monaco
+  - MCP
+  - Vitest
+highlights:
+  - Plan, Review and Build modes, with every file write shown as a side by side diff for approval.
+  - Automatic two key failover across providers, plus OpenAI, Anthropic, Gemini and NVIDIA support.
+  - Checkpoints after every step, so interrupted runs can resume safely.
+  - Secrets encrypted with Windows DPAPI and redacted from logs and tool output.
+  - Auto updates from GitHub Releases.
+---
+Dahl Studio is a coding studio that treats your project with respect. There is no backend and no database. Settings, memory and runs live as plain JSON and Markdown on disk, and the app ships as a signed Windows installer that updates itself from GitHub Releases.
+
+## How the agent works
+
+Agents work in three modes. Plan and Review are read only. Build adds writing files and running commands, and every one of those actions needs approval by default. Sub agents can work in parallel with file leases so they never step on each other.
+
+Every step is checkpointed. If the app closes mid run, the run is marked interrupted and never resumes on its own. Pressing Continue picks it up exactly where it stopped.
+
+## Built for real providers
+
+Model lists come live from each provider. Errors are classified, so a rate limit fails over to a second key while a context length error is shown to you instead of being retried blindly. Bundled MCP servers give agents a filesystem and a browser out of the box.

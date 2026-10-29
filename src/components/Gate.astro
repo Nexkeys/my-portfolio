@@ -1,0 +1,194 @@
+---
+import Decrypt from './react/Decrypt';
+interface Props {
+  profile: { available: boolean; availabilityNote: string; location: string };
+}
+const { profile } = Astro.props;
+---
+<div class="gate" data-gate role="dialog" aria-modal="true" aria-labelledby="gate-title">
+  <div class="gate-top wrap">
+    <span class="mono g-brand">ernest.dev</span>
+    <span class="mono g-status">
+      <span class={profile.available ? 'dot' : 'dot off'}></span>
+      <span class="hide-xs">{profile.location.split(',')[0]} </span><span data-clock>--:--</span>
+      <span class="hide-xs"> · {profile.available ? 'Available for work' : 'Booked up'}</span>
+    </span>
+  </div>
+
+  <div class="gate-q wrap">
+    <p class="mono g-eyebrow" data-g>Before we start</p>
+    <h2 id="gate-title" class="g-title">
+      <span class="g-line"><span data-g>Are you a <em class="accent">techie</em>,</span></span>
+      <span class="g-line"><span data-g>or a normal person?</span></span>
+    </h2>
+    <div class="choices">
+      <button type="button" class="choice techie" data-mode-set="techie" data-g>
+        <span class="c-head">
+          <span class="c-title">I'm a techie</span>
+          <span class="c-sub">Full terminal. Real commands. Tab completion.</span>
+        </span>
+        <span class="c-row">
+          <code><span aria-hidden="true">$ </span><Decrypt client:load text="ssh guest@ernest.dev" /></code>
+          <span class="kbd">T</span>
+        </span>
+      </button>
+      <button type="button" class="choice normal" data-mode-set="normal" data-g>
+        <span class="c-head">
+          <span class="c-title">Normal person</span>
+          <span class="c-sub">The clean, visual version. Same work, zero jargon.</span>
+        </span>
+        <span class="c-row">
+          <span class="c-go">Show me around <span aria-hidden="true">&rarr;</span></span>
+          <span class="kbd">N</span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div class="gate-bottom wrap">
+    <span class="mono">You can switch any time</span>
+    <span class="mono hide-xs">Press T or N</span>
+  </div>
+</div>
+
+<style>
+  .gate {
+    position: fixed;
+    inset: 0;
+    z-index: 140;
+    display: none;
+    grid-template-rows: auto 1fr auto;
+    background: var(--bg);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  :global(html[data-gate='open']) .gate {
+    display: grid;
+  }
+  :global(html[data-gate='open']) body {
+    overflow: hidden;
+  }
+  .gate-top,
+  .gate-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 26px;
+    padding-bottom: 26px;
+  }
+  .g-brand {
+    color: var(--fg);
+  }
+  .g-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .gate-q {
+    align-self: center;
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+  .g-eyebrow {
+    margin-bottom: 24px;
+  }
+  .g-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(54px, 9.4vw, 152px);
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+  }
+  .g-line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.06em;
+  }
+  .g-line > span {
+    display: inline-block;
+  }
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: clamp(36px, 5vw, 60px);
+    max-width: 1000px;
+  }
+  .choice {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 44px;
+    text-align: left;
+    padding: 28px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line-2);
+    background: var(--card);
+    transition: translate 0.5s var(--ease), border-color 0.3s, box-shadow 0.5s var(--ease);
+  }
+  .choice:hover {
+    translate: 0 -4px;
+    box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.25);
+  }
+  .choice.techie {
+    background: #111112;
+    color: #e9e6df;
+    border-color: #222;
+  }
+  .choice.normal:hover {
+    border-color: var(--fg);
+  }
+  .c-head {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .c-title {
+    font-size: clamp(24px, 2.4vw, 30px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  .c-sub {
+    font-size: 15px;
+    color: var(--mute);
+  }
+  .techie .c-sub {
+    color: #7d7a73;
+  }
+  .c-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .c-row code {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+  }
+  .techie .kbd {
+    border-color: #3a3a3c;
+    color: #8a877f;
+  }
+  .c-go {
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .choice:hover .c-go span {
+    display: inline-block;
+    transform: translateX(4px);
+    transition: transform 0.4s var(--ease);
+  }
+  @media (max-width: 720px) {
+    .choices {
+      grid-template-columns: 1fr;
+    }
+    .choice {
+      gap: 28px;
+      padding: 22px;
+    }
+    .hide-xs {
+      display: none;
+    }
+  }
+</style>

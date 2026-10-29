@@ -1,0 +1,39 @@
+groups:
+  - name: Languages
+    items:
+      - { name: JavaScript, level: expert }
+      - { name: TypeScript, level: strong }
+      - { name: Python, level: strong }
+      - { name: SQL, level: solid }
+      - { name: Java, level: solid }
+      - { name: MQL5, level: solid }
+  - name: Frontend
+    items:
+      - { name: React, level: expert }
+      - { name: Next.js, level: strong }
+      - { name: React Native and Expo, level: strong }
+      - { name: Tailwind CSS, level: expert }
+      - { name: Astro, level: strong }
+      - { name: Three.js and GSAP, level: solid }
+  - name: Backend and data
+    items:
+      - { name: Node.js and Express, level: strong }
+      - { name: Firebase, level: expert }
+      - { name: Supabase and PostgreSQL, level: strong }
+      - { name: MongoDB, level: solid }
+      - { name: REST APIs and WebSockets, level: strong }
+      - { name: Paystack payments, level: strong }
+  - name: AI and tooling
+    items:
+      - { name: 'OpenAI, Groq and Anthropic APIs', level: strong }
+      - { name: Ollama and local models, level: strong }
+      - { name: MCP and agent workflows, level: strong }
+      - { name: Electron, level: solid }
+      - { name: VS Code extensions, level: solid }
+  - name: Shipping
+    items:
+      - { name: Git and GitHub Actions, level: strong }
+      - { name: Vercel and Netlify, level: expert }
+      - { name: Firebase Hosting, level: expert }
+      - { name: Azure, level: learning }
+      - { name: Figma, level: solid }

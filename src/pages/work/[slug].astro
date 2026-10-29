@@ -1,0 +1,212 @@
+---
+import Base from '../../layouts/Base.astro';
+import Cover from '../../components/Cover.astro';
+import MagneticLink from '../../components/react/MagneticLink';
+import { getProjects, renderBody, statusLabel } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((p, i) => ({
+    params: { slug: p.slug },
+    props: { slug: p.slug, next: projects[(i + 1) % projects.length] }
+  }));
+}
+
+const { slug, next } = Astro.props;
+const project = (await getProjects()).find((p) => p.slug === slug)!;
+const html = await renderBody(project.body);
+const hasBody = html.replace(/<[^>]+>/g, '').trim().length > 0;
+const url = new URL(`/work/${slug}`, Astro.site).href;
+
+const ld = [
+  {
+    '@context': 'https://schema.org',
+    '@type': project.category.toLowerCase().includes('tool') || project.repoUrl ? 'SoftwareSourceCode' : 'CreativeWork',
+    name: project.title,
+    headline: project.tagline,
+    description: project.summary,
+    url,
+    ...(project.repoUrl ? { codeRepository: project.repoUrl } : {}),
+    ...(project.liveUrl ? { sameAs: project.liveUrl } : {}),
+    keywords: project.stack.join(', '),
+    dateCreated: project.year.slice(0, 4),
+    creator: { '@id': `${Astro.site!.origin}/#person` }
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: Astro.site!.origin },
+      { '@type': 'ListItem', position: 2, name: 'Work', item: new URL('/work', Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: project.title, item: url }
+    ]
+  }
+];
+const facts = [
+  { k: 'Role', v: project.role },
+  { k: 'Year', v: project.year },
+  { k: 'Type', v: project.category },
+  { k: 'For', v: project.client ? 'A client' : 'My own product' },
+  { k: 'Status', v: statusLabel[project.status] }
+];
+---
+<Base title={`${project.title}: ${project.tagline}`} description={project.summary} type="article" jsonLd={ld}>
+  <article>
+    <header class="wrap p-head">
+      <nav class="crumbs mono" aria-label="Breadcrumb">
+        <a href="/work" class="link-u">Work</a> <span aria-hidden="true">/</span> <span aria-current="page">{project.title}</span>
+      </nav>
+      <h1 class="p-title" data-reveal>{project.title}</h1>
+      <p class="p-tagline" data-reveal data-reveal-delay="0.05">{project.tagline}</p>
+      <div class="p-actions" data-reveal data-reveal-delay="0.1">
+        {project.liveUrl && <MagneticLink client:visible href={project.liveUrl} external>Visit live site <span aria-hidden="true">&nearr;</span></MagneticLink>}
+        {project.repoUrl && <MagneticLink client:visible href={project.repoUrl} external className={project.liveUrl ? 'btn ghost' : 'btn'}>View source <span aria-hidden="true">&nearr;</span></MagneticLink>}
+        {project.links.map((l) => <a href={l.url ?? '#'} class="btn ghost" target="_blank" rel="noopener noreferrer">{l.label} <span aria-hidden="true">&nearr;</span></a>)}
+      </div>
+    </header>
+
+    <div class="wrap" data-reveal>
+      <Cover slug={project.slug} title={project.title} category={project.category} image={project.cover} class="p-cover" eager />
+    </div>
+
+    <div class="wrap p-body">
+      <aside class="p-facts">
+        <dl>
+          {facts.map((f) => <div><dt class="mono">{f.k}</dt><dd>{f.v}</dd></div>)}
+          <div>
+            <dt class="mono">Stack</dt>
+            <dd class="stack">{project.stack.map((s) => <span class="tag">{s}</span>)}</dd>
+          </div>
+        </dl>
+      </aside>
+      <div class="p-main">
+        <p class="p-summary">{project.summary}</p>
+        {project.highlights.length > 0 && (
+          <ul class="p-high" role="list">
+            {project.highlights.map((h, i) => (
+              <li data-reveal><span class="mono">{String(i + 1).padStart(2, '0')}</span><span>{h}</span></li>
+            ))}
+          </ul>
+        )}
+        {hasBody && <div class="prose" set:html={html} />}
+      </div>
+    </div>
+  </article>
+
+  <a href={`/work/${next.slug}`} class="next wrap" data-cursor="Next project">
+    <span class="mono">Next project</span>
+    <span class="next-title">{next.title} <span aria-hidden="true">&rarr;</span></span>
+  </a>
+</Base>
+
+<style>
+  .p-head {
+    padding-top: clamp(130px, 17vw, 190px);
+    padding-bottom: clamp(36px, 5vw, 56px);
+  }
+  .crumbs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .p-title {
+    font-size: clamp(56px, 11vw, 180px);
+    font-weight: 600;
+    letter-spacing: -0.06em;
+    line-height: 0.86;
+  }
+  .p-tagline {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(26px, 3.4vw, 48px);
+    line-height: 1.1;
+    margin-top: 20px;
+    max-width: 24ch;
+    color: var(--fg-2);
+  }
+  .p-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 36px;
+  }
+  .wrap :global(.p-cover) {
+    border-radius: clamp(14px, 2vw, 24px);
+  }
+  .p-body {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: clamp(40px, 7vw, 120px);
+    padding-top: clamp(56px, 7vw, 96px);
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  .p-facts dl {
+    position: sticky;
+    top: 100px;
+    margin: 0;
+    display: grid;
+    gap: 22px;
+  }
+  .p-facts dd {
+    margin: 6px 0 0;
+    font-size: 17px;
+  }
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .p-summary {
+    font-size: clamp(22px, 2.3vw, 32px);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    max-width: 30ch;
+  }
+  .p-high {
+    margin: 48px 0;
+    border-top: 1px solid var(--line);
+  }
+  .p-high li {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 18px;
+  }
+  .p-high .mono {
+    color: var(--accent);
+    padding-top: 4px;
+  }
+  .next {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: clamp(48px, 7vw, 96px);
+    padding-bottom: clamp(48px, 7vw, 96px);
+    border-top: 1px solid var(--line);
+  }
+  .next-title {
+    font-size: clamp(48px, 9vw, 140px);
+    font-weight: 600;
+    letter-spacing: -0.055em;
+    line-height: 0.9;
+    transition: color 0.3s, transform 0.6s var(--ease);
+  }
+  .next:hover .next-title {
+    color: var(--accent);
+    transform: translateX(12px);
+  }
+  @media (max-width: 860px) {
+    .p-body {
+      grid-template-columns: 1fr;
+    }
+    .p-facts dl {
+      position: static;
+      grid-template-columns: 1fr 1fr;
+    }
+    .p-facts dl > div:last-child {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

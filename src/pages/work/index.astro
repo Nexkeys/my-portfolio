@@ -1,0 +1,142 @@
+---
+import Base from '../../layouts/Base.astro';
+import Cover from '../../components/Cover.astro';
+import { getProjects, statusLabel } from '../../lib/content';
+
+const projects = await getProjects();
+const filters = [
+  { key: 'all', label: 'All' },
+  { key: 'live', label: 'Live' },
+  { key: 'open-source', label: 'Open source' },
+  { key: 'client', label: 'Client work' },
+  { key: 'in-progress', label: 'In progress' }
+].filter((f) => f.key === 'all' || projects.some((p) => (f.key === 'client' ? p.client : p.status === f.key)));
+---
+<Base title="Work" description={`All ${projects.length} projects by Ernest Uwaoma: business platforms, developer tools, AI products, marketplaces and client work.`}>
+  <section class="wrap page-head">
+    <p class="mono eyebrow">Index · {projects.length} projects</p>
+    <h1 class="page-title" data-reveal>All the <em>work</em></h1>
+    <div class="filters" role="group" aria-label="Filter projects">
+      {filters.map((f, i) => (
+        <button type="button" class="chip" data-filter={f.key} aria-pressed={i === 0 ? 'true' : 'false'}>{f.label}</button>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap" aria-label="Projects">
+    <ul class="grid" role="list">
+      {projects.map((p) => (
+        <li class="card" data-status={p.status} data-client={p.client ? 'yes' : 'no'} data-reveal>
+          <a href={`/work/${p.slug}`} data-cursor="View">
+            <Cover slug={p.slug} title={p.title} category={p.category} image={p.cover} />
+            <div class="card-meta">
+              <h2 class="card-title">{p.title}</h2>
+              <span class="mono">{p.year}</span>
+            </div>
+            <p class="card-tag">{p.tagline}</p>
+            <div class="card-tags">
+              <span class={p.status === 'live' ? 'tag live' : 'tag'}>{statusLabel[p.status]}</span>
+              <span class="tag">{p.category}</span>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('.card');
+  chips.forEach((chip) =>
+    chip.addEventListener('click', () => {
+      const f = chip.dataset.filter;
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+      cards.forEach((card) => {
+        const show = f === 'all' || (f === 'client' ? card.dataset.client === 'yes' : card.dataset.status === f);
+        card.hidden = !show;
+      });
+    })
+  );
+</script>
+
+<style>
+  .page-head {
+    padding-top: clamp(130px, 18vw, 200px);
+    padding-bottom: clamp(32px, 5vw, 56px);
+  }
+  .page-title {
+    font-size: clamp(56px, 11vw, 176px);
+    font-weight: 600;
+    letter-spacing: -0.058em;
+    line-height: 0.88;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 36px;
+  }
+  .chip {
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid var(--line-2);
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
+  .chip[aria-pressed='true'] {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(28px, 3vw, 48px) 20px;
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  .card a {
+    display: block;
+  }
+  .card :global(.cover) {
+    transition: transform 0.7s var(--ease), border-radius 0.7s var(--ease);
+  }
+  .card a:hover :global(.cover) {
+    transform: scale(0.975);
+    border-radius: 22px;
+  }
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .card-title {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+  }
+  .card-tag {
+    color: var(--mute);
+    margin-top: 4px;
+    font-size: 16px;
+  }
+  .card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  @media (max-width: 1000px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 620px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

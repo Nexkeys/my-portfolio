@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Page not found" noindex>
+  <section class="wrap nf">
+    <p class="mono"><span class="accent">guest@ernest</span> ~ $ cd {Astro.url.pathname}</p>
+    <p class="mono err">cd: no such file or directory</p>
+    <h1 class="title">This page <em>doesn't</em> exist.</h1>
+    <div class="actions">
+      <a href="/" class="btn">Back home</a>
+      <a href="/work" class="btn ghost">See the work</a>
+      <button type="button" class="btn ghost" data-palette-open>Search <span class="kbd">Ctrl K</span></button>
+    </div>
+  </section>
+</Base>
+<style>
+  .nf {
+    min-height: 90svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 120px;
+    padding-bottom: 80px;
+  }
+  .err {
+    color: #e5484d;
+    margin-top: 6px;
+  }
+  .title {
+    font-size: clamp(54px, 10vw, 160px);
+    font-weight: 600;
+    letter-spacing: -0.058em;
+    line-height: 0.9;
+    margin-top: 40px;
+    max-width: 12ch;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 40px;
+  }
+</style>

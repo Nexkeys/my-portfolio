@@ -1,0 +1,190 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Palette from '../components/Palette.astro';
+import Gate from '../components/Gate.astro';
+import Terminal from '../components/terminal/Terminal';
+import type { TermData } from '../components/terminal/types';
+import { getExperience, getNotes, getProfile, getProjects, getServices, getSkills } from '../lib/content';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article' | 'profile';
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  gate?: boolean;
+  noindex?: boolean;
+}
+
+const profile = await getProfile();
+const [projects, experience, skills, services, notes] = await Promise.all([
+  getProjects(),
+  getExperience(),
+  getSkills(),
+  getServices(),
+  getNotes()
+]);
+
+const {
+  title,
+  description = profile.seoDescription,
+  image = '/og.png',
+  type = 'website',
+  jsonLd,
+  gate = false,
+  noindex = false
+} = Astro.props;
+
+const site = Astro.site!;
+const fullTitle = title ? `${title} | ${profile.name}` : profile.seoTitle;
+const canonical = new URL(Astro.url.pathname, site).href;
+const ogImage = new URL(image, site).href;
+const cvUrl = profile.cv ? `/cv/${profile.cv}` : '';
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${site.origin}/#person`,
+  name: profile.name,
+  jobTitle: profile.role,
+  description: profile.intro,
+  url: site.origin,
+  email: `mailto:${profile.email}`,
+  telephone: profile.phone,
+  address: { '@type': 'PostalAddress', addressLocality: profile.location.split(',')[0], addressCountry: 'NG' },
+  worksFor: { '@type': 'Organization', name: 'NexKeys', url: 'https://nexkeysagency.com.ng' },
+  knowsAbout: skills.flatMap((g) => g.items.map((i) => i.name)).slice(0, 24),
+  sameAs: profile.socials.map((s) => s.url)
+};
+const website = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${site.origin}/#website`,
+  url: site.origin,
+  name: `${profile.name}`,
+  author: { '@id': `${site.origin}/#person` },
+  inLanguage: 'en'
+};
+const ld = [person, website, ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [])];
+
+const termData: TermData = {
+  profile: {
+    name: profile.name,
+    shortName: profile.shortName,
+    role: profile.role,
+    intro: profile.intro,
+    about: [...profile.about],
+    location: profile.location,
+    timezone: profile.timezone,
+    available: profile.available,
+    availabilityNote: profile.availabilityNote,
+    email: profile.email,
+    phone: profile.phone,
+    whatsapp: profile.whatsapp,
+    bookingUrl: profile.bookingUrl ?? '',
+    github: profile.github,
+    socials: profile.socials.map((s) => ({ label: s.label, url: s.url ?? '' })),
+    stats: profile.stats.map((s) => ({ value: s.value ?? 0, suffix: s.suffix, label: s.label })),
+    cvUrl
+  },
+  projects: projects.map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    tagline: p.tagline,
+    summary: p.summary,
+    category: p.category,
+    role: p.role,
+    year: p.year,
+    status: p.status,
+    client: p.client,
+    featured: p.featured,
+    liveUrl: p.liveUrl ?? '',
+    repoUrl: p.repoUrl ?? '',
+    links: p.links.map((l) => ({ label: l.label, url: l.url ?? '' })),
+    stack: [...p.stack],
+    highlights: [...p.highlights]
+  })),
+  experience: experience.map((j) => ({
+    slug: j.slug,
+    company: j.company,
+    role: j.role,
+    location: j.location,
+    start: j.start,
+    end: j.end,
+    points: [...j.points]
+  })),
+  skills: skills.map((g) => ({ name: g.name, items: g.items.map((i) => ({ name: i.name, level: i.level })) })),
+  services: services.map((s) => ({ title: s.title, summary: s.summary, includes: [...s.includes] })),
+  notes: notes.map((n) => ({ slug: n.slug, title: n.title, date: n.date ?? '', excerpt: n.excerpt }))
+};
+---
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="author" content={profile.name} />
+    <meta name="theme-color" content="#f2f0eb" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d0d0e" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {notes.length > 0 && <link rel="alternate" type="application/rss+xml" title={`${profile.name} notes`} href="/rss.xml" />}
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={profile.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_NG" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+
+    <script is:inline define:vars={{ gate }}>
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        try {
+          var t = localStorage.getItem('ed-theme');
+          if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          d.dataset.theme = t;
+        } catch (e) {}
+        var mode = null;
+        try {
+          var q = new URLSearchParams(location.search).get('mode');
+          if (q === 'techie' || q === 'normal') sessionStorage.setItem('ed-mode', q);
+          mode = sessionStorage.getItem('ed-mode');
+        } catch (e) {}
+        window.edMode = mode || 'normal';
+        if (mode === 'techie') d.dataset.mode = 'techie';
+        else if (gate && !mode) d.dataset.gate = 'open';
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    {gate && <Gate profile={profile} />}
+    <Nav profile={profile} hasNotes={notes.length > 0} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer profile={profile} hasNotes={notes.length > 0} />
+    <Palette profile={profile} projects={projects} cvUrl={cvUrl} hasNotes={notes.length > 0} />
+    <Terminal client:only="react" data={termData} />
+    <div class="cursor" aria-hidden="true"><div class="cursor-dot"></div><div class="cursor-label"></div></div>
+    <script src="../scripts/app.ts"></script>
+  </body>
+</html>

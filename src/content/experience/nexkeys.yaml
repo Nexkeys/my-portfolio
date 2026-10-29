@@ -1,0 +1,12 @@
+company: NexKeys
+role: Founder and lead engineer
+url: https://nexkeysagency.com.ng
+location: Remote, Lagos
+start: Jul 2020
+end: ''
+order: 1
+points:
+  - Founded and run a product studio that has shipped production web apps across fintech, gaming, commerce and entertainment.
+  - Own every stage of each project, from client briefing and architecture to development, deployment and post launch support.
+  - Built realtime systems including a token trading platform and a multiplayer gaming platform on Firebase Realtime Database and WebSockets.
+  - Engineered secure backend APIs with JWT auth, rate limiting and Paystack payment integrations.

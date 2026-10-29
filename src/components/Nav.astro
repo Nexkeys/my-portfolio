@@ -1,0 +1,235 @@
+---
+import Decrypt from './react/Decrypt';
+interface Props {
+  profile: { name: string; available: boolean };
+  hasNotes: boolean;
+}
+const { profile, hasNotes } = Astro.props;
+const links = [
+  { href: '/#work', label: 'Work' },
+  { href: '/#services', label: 'Services' },
+  { href: '/#about', label: 'About' },
+  ...(hasNotes ? [{ href: '/notes', label: 'Notes' }] : []),
+  { href: '/#contact', label: 'Contact' }
+];
+---
+<header class="nav" data-nav>
+  <div class="nav-inner wrap">
+    <a href="/" class="brand" aria-label={`${profile.name}, home`}>
+      <span class="brand-mark" aria-hidden="true">E</span>
+      <span class="brand-text">ernest<span class="accent">.</span>dev</span>
+    </a>
+
+    <nav class="nav-links" aria-label="Primary">
+      {links.map((l) => <a href={l.href} class="mono nav-link link-u">{l.label}</a>)}
+    </nav>
+
+    <div class="nav-tools">
+      <button type="button" class="tool term-toggle" data-mode-set="techie" aria-label="Open terminal mode">
+        <span class="prompt" aria-hidden="true">&gt;_</span>
+        <span class="tt-label"><Decrypt client:visible text="terminal" className="mono" /></span>
+      </button>
+      <button type="button" class="tool icon" data-theme-toggle aria-label="Toggle light and dark mode">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="sun" d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66 1.41-1.41M4.93 19.07l1.41-1.41m0-11.32L4.93 4.93m14.14 14.14-1.41-1.41M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path class="moon" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" class="tool kbd-btn" data-palette-open aria-label="Open command palette">
+        <span class="kbd">Ctrl K</span>
+      </button>
+      <button type="button" class="tool menu-btn" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu" hidden>
+    <nav aria-label="Mobile">
+      {links.map((l, i) => (
+        <a href={l.href} class="m-link" data-menu-close>
+          <span class="mono">0{i + 1}</span>{l.label}
+        </a>
+      ))}
+    </nav>
+    <div class="m-foot">
+      <button type="button" class="btn ghost" data-mode-set="techie" data-menu-close>&gt;_ Terminal mode</button>
+      <button type="button" class="btn ghost" data-palette-open data-menu-close>Search</button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 100;
+    transition: transform 0.6s var(--ease), background-color 0.4s;
+  }
+  .nav.is-hidden {
+    transform: translateY(-110%);
+  }
+  .nav.is-scrolled {
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    backdrop-filter: saturate(1.4) blur(16px);
+    -webkit-backdrop-filter: saturate(1.4) blur(16px);
+    box-shadow: 0 1px 0 var(--line);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    height: 72px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-size: 17px;
+  }
+  .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: var(--fg);
+    color: var(--bg);
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 20px;
+    font-weight: 400;
+    transition: transform 0.5s var(--ease), background-color 0.3s;
+  }
+  .brand:hover .brand-mark {
+    transform: rotate(-8deg) scale(1.05);
+    background: var(--accent);
+    color: #fff;
+  }
+  .nav-links {
+    display: flex;
+    gap: 30px;
+  }
+  .nav-link {
+    color: var(--fg-2);
+  }
+  .nav-link:hover {
+    color: var(--fg);
+  }
+  .nav-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: var(--fg);
+    transition: border-color 0.3s, background-color 0.3s;
+  }
+  .tool:hover {
+    border-color: var(--line-2);
+    background: var(--card);
+  }
+  .tool.icon {
+    width: 38px;
+    padding: 0;
+    justify-content: center;
+  }
+  .term-toggle .prompt {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .term-toggle :global(.mono) {
+    color: var(--fg);
+  }
+  .kbd-btn {
+    padding: 0 6px;
+    border: 0;
+  }
+  :global(:root[data-theme='dark']) .sun,
+  :global(:root[data-theme='light']) .moon {
+    display: none;
+  }
+  .menu-btn {
+    display: none;
+    width: 38px;
+    padding: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+  }
+  .menu-btn span {
+    display: block;
+    width: 16px;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 0.4s var(--ease);
+  }
+  .menu-btn[aria-expanded='true'] span:first-child {
+    transform: translateY(3.25px) rotate(45deg);
+  }
+  .menu-btn[aria-expanded='true'] span:last-child {
+    transform: translateY(-3.25px) rotate(-45deg);
+  }
+
+  .mobile-menu {
+    position: fixed;
+    inset: 72px 0 0;
+    background: var(--bg);
+    padding: 24px var(--gutter) calc(24px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .mobile-menu[hidden] {
+    display: none;
+  }
+  .mobile-menu nav {
+    display: flex;
+    flex-direction: column;
+  }
+  .m-link {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    font-size: clamp(40px, 12vw, 64px);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .m-foot {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  @media (max-width: 900px) {
+    .nav-links,
+    .kbd-btn {
+      display: none;
+    }
+    .menu-btn {
+      display: inline-flex;
+    }
+  }
+  @media (max-width: 420px) {
+    .tt-label {
+      display: none;
+    }
+    .term-toggle {
+      width: 38px;
+      padding: 0;
+      justify-content: center;
+    }
+  }
+</style>
