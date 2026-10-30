@@ -1,11 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getProfile } from '../lib/content';
+const profile = await getProfile();
 ---
 <Base title="Page not found" noindex>
   <section class="wrap nf">
     <p class="mono"><span class="accent">guest@ernest</span> ~ $ cd {Astro.url.pathname}</p>
     <p class="mono err">cd: no such file or directory</p>
     <h1 class="title">This page <em>doesn't</em> exist.</h1>
+    {profile.saying && <p class="saying">But {profile.saying.charAt(0).toLowerCase() + profile.saying.slice(1)}</p>}
     <div class="actions">
       <a href="/" class="btn">Back home</a>
       <a href="/work" class="btn ghost">See the work</a>
@@ -33,6 +36,13 @@ import Base from '../layouts/Base.astro';
     line-height: 0.9;
     margin-top: 40px;
     max-width: 12ch;
+  }
+  .saying {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(24px, 2.6vw, 34px);
+    color: var(--fg-2);
+    margin-top: 20px;
   }
   .actions {
     display: flex;

@@ -348,7 +348,8 @@ export default function Terminal({ data }: { data: TermData }) {
           ['packages', `${projects.length} projects`],
           ['editor', 'Dahl Studio'],
           ['shell', 'portfolio-sh 2.0'],
-          ['status', profile.available ? 'available for work' : 'heads down']
+          ['status', profile.available ? 'available for work' : 'heads down'],
+          ...(profile.saying ? [['motto', profile.saying.toLowerCase()]] : [])
         ].map(([k, v]) => (
           <div key={k}>
             <span className="t-accent">{pad(k, 10)}</span>
@@ -506,6 +507,22 @@ export default function Terminal({ data }: { data: TermData }) {
       )
     },
     neofetch: { desc: 'system info, portfolio edition', run: () => neofetch() },
+    motto: {
+      desc: 'what keeps me going',
+      hidden: !profile.favouriteQuote && !profile.saying,
+      run: () => (
+        <div className="t-block">
+          {profile.favouriteQuote && (
+            <div>
+              <span className="t-accent">“</span>
+              <span className="t-strong">{profile.favouriteQuote}</span>
+              <span className="t-accent">”</span>
+            </div>
+          )}
+          {profile.saying && <div className="t-mute">and always remember: {profile.saying.toLowerCase()}</div>}
+        </div>
+      )
+    },
     ls: {
       desc: 'list files',
       args: () => ['projects', 'experience', ...(notes.length ? ['notes'] : [])],

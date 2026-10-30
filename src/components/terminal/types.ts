@@ -45,6 +45,8 @@ export interface TermData {
     socials: { label: string; url: string }[];
     stats: { value: number; suffix: string; label: string }[];
     cvUrl: string;
+    favouriteQuote: string;
+    saying: string;
   };
   projects: TermProject[];
   experience: TermJob[];

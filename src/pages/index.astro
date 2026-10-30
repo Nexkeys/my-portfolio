@@ -152,6 +152,12 @@ const itemList = {
       <div class="about-side">
         <p class="mono eyebrow"><span class="n">03</span> About</p>
         <h2 id="about-title" class="section-title" data-reveal>Hi, I'm <em>{first}</em>.</h2>
+        {profile.photo && (
+          <figure class="portrait" data-reveal>
+            <img src={profile.photo} alt={`Portrait of ${profile.name}`} width="1200" height="1500" loading="lazy" decoding="async" />
+            <figcaption class="mono">{profile.name} · {profile.location.split(',')[0]}</figcaption>
+          </figure>
+        )}
         <dl class="facts" data-stagger>
           <div><dt class="mono">Based in</dt><dd>{profile.location}</dd></div>
           <div><dt class="mono">Local time</dt><dd><span data-clock>--:--</span> WAT</dd></div>
@@ -250,12 +256,18 @@ const itemList = {
     <section class="section quotes" aria-labelledby="quotes-title">
       <div class="wrap">
         <p class="mono eyebrow"><span class="n">06</span> Kind words</p>
-        <h2 id="quotes-title" class="section-title" data-reveal>From the <em>people</em> I build for</h2>
+        <div class="section-head">
+          <h2 id="quotes-title" class="section-title" data-reveal>From the <em>people</em> I build for</h2>
+          <p class="quotes-lede hide-sm" data-reveal>Clients I've built for, on my own and through NexKeys, the studio I founded.</p>
+        </div>
         <div class="quote-grid" data-stagger>
           {testimonials.map((t) => (
             <figure class="quote">
               <blockquote>&ldquo;{t.quote}&rdquo;</blockquote>
-              <figcaption><strong>{t.name}</strong><span class="mono">{t.role}</span></figcaption>
+              <figcaption>
+                <span class="avatar" aria-hidden="true">{t.name.charAt(0)}</span>
+                <span><strong>{t.name}</strong><span class="mono">{t.role}</span></span>
+              </figcaption>
             </figure>
           ))}
         </div>
@@ -285,6 +297,15 @@ const itemList = {
           ))}
         </ul>
       </div>
+    </section>
+  )}
+
+  {profile.favouriteQuote && (
+    <section class="motto wrap" aria-label="Favourite quote">
+      <p class="mono motto-label" data-reveal><span class="motto-line" aria-hidden="true"></span> What keeps me going</p>
+      <blockquote class="motto-quote" data-reveal>
+        <span class="motto-mark" aria-hidden="true">&ldquo;</span>{profile.favouriteQuote}
+      </blockquote>
     </section>
   )}
 
@@ -797,12 +818,102 @@ const itemList = {
     display: none;
   }
 
+  /* portrait */
+  .portrait {
+    position: relative;
+    margin-top: 36px;
+    max-width: 360px;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--bg-2);
+  }
+  .portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.05);
+    transition: filter 0.8s var(--ease), transform 1.2s var(--ease);
+  }
+  .portrait:hover img {
+    filter: none;
+    transform: scale(1.03);
+  }
+  .portrait figcaption {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(13, 13, 14, 0.6);
+    color: #f2f0eb;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* favourite quote */
+  .motto {
+    padding-block: clamp(80px, 12vw, 160px);
+    text-align: center;
+  }
+  .motto-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .motto-line {
+    width: 28px;
+    height: 1px;
+    background: var(--accent);
+  }
+  .motto-quote {
+    position: relative;
+    margin: 0 auto;
+    max-width: 16ch;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(44px, 7.4vw, 120px);
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+  .motto-mark {
+    color: var(--accent);
+    margin-right: 0.04em;
+  }
+
   /* testimonials */
+  .quotes-lede {
+    max-width: 34ch;
+    color: var(--fg-2);
+  }
   .quote-grid {
-    margin-top: 48px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
+  }
+  .quote figcaption {
+    flex-direction: row !important;
+    align-items: center;
+    gap: 14px !important;
+  }
+  .quote figcaption > span:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .avatar {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--fg);
+    color: var(--bg);
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
   }
   .quote {
     border: 1px solid var(--line);
@@ -1022,6 +1133,15 @@ const itemList = {
     .note-row {
       grid-template-columns: 1fr;
       gap: 6px;
+    }
+    .quote-grid {
+      grid-template-columns: 1fr;
+    }
+    .quote blockquote {
+      font-size: 22px;
+    }
+    .portrait {
+      max-width: none;
     }
   }
   @media (max-width: 420px) {
