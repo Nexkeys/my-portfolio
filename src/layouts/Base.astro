@@ -56,7 +56,8 @@ const person = {
   address: { '@type': 'PostalAddress', addressLocality: profile.location.split(',')[0], addressCountry: 'NG' },
   worksFor: { '@type': 'Organization', name: 'NexKeys', url: 'https://nexkeysagency.com.ng' },
   knowsAbout: skills.flatMap((g) => g.items.map((i) => i.name)).slice(0, 24),
-  sameAs: profile.socials.map((s) => s.url)
+  sameAs: profile.socials.map((s) => s.url),
+  ...(profile.photo ? { image: new URL(profile.photo, site).href } : {})
 };
 const website = {
   '@context': 'https://schema.org',
@@ -87,7 +88,9 @@ const termData: TermData = {
     github: profile.github,
     socials: profile.socials.map((s) => ({ label: s.label, url: s.url ?? '' })),
     stats: profile.stats.map((s) => ({ value: s.value ?? 0, suffix: s.suffix, label: s.label })),
-    cvUrl
+    cvUrl,
+    favouriteQuote: profile.favouriteQuote ?? '',
+    saying: profile.saying ?? ''
   },
   projects: projects.map((p) => ({
     slug: p.slug,

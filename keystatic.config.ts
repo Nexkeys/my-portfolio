@@ -40,6 +40,21 @@ export default config({
           label: 'About paragraphs',
           itemLabel: (p) => p.value.slice(0, 60)
         }),
+        photo: fields.image({
+          label: 'Your photo',
+          description: 'Shown in the About section. A portrait (taller than wide) looks best, around 1200 by 1500.',
+          directory: 'public/images/profile',
+          publicPath: '/images/profile/'
+        }),
+        favouriteQuote: fields.text({
+          label: 'Favourite quote',
+          description: 'Shown large near the end of the home page. Leave empty to hide.',
+          multiline: true
+        }),
+        saying: fields.text({
+          label: 'Favourite saying',
+          description: 'Shown in the footer and on the 404 page. Leave empty to hide.'
+        }),
         statement: fields.text({
           label: 'Big statement',
           description: 'A single sentence revealed word by word on scroll, in the About section.',
