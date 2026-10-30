@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import Cover from '../../components/Cover.astro';
 import MagneticLink from '../../components/react/MagneticLink';
-import { getProjects, renderBody, statusLabel } from '../../lib/content';
+import { clip, getProjects, projectTitle, renderBody, statusLabel } from '../../lib/content';
 
 export async function getStaticPaths() {
   const projects = await getProjects();
@@ -28,6 +28,7 @@ const ld = [
     url,
     ...(project.repoUrl ? { codeRepository: project.repoUrl } : {}),
     ...(project.liveUrl ? { sameAs: project.liveUrl } : {}),
+    ...(project.cover ? { image: new URL(project.cover, Astro.site).href } : {}),
     keywords: project.stack.join(', '),
     dateCreated: project.year.slice(0, 4),
     creator: { '@id': `${Astro.site!.origin}/#person` }
@@ -50,7 +51,7 @@ const facts = [
   { k: 'Status', v: statusLabel[project.status] }
 ];
 ---
-<Base title={`${project.title}: ${project.tagline}`} description={project.summary} type="article" jsonLd={ld}>
+<Base title={projectTitle(project)} description={clip(project.summary)} image={project.cover ?? undefined} type="article" jsonLd={ld}>
   <article>
     <header class="wrap p-head">
       <nav class="crumbs mono" aria-label="Breadcrumb">
