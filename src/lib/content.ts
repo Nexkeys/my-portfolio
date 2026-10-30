@@ -74,6 +74,23 @@ export const statusLabel: Record<string, string> = {
   archived: 'Archived'
 };
 
+/** Trim text to a search friendly length on a word boundary. */
+export function clip(text: string, max = 155) {
+  const t = text.replace(/\s+/g, ' ').trim();
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max - 1);
+  return cut.slice(0, cut.lastIndexOf(' ')).replace(/[,.;:]$/, '') + '…';
+}
+
+/** Page title that stays within what Google shows (about 60 characters with the name suffix). */
+export function projectTitle(p: { title: string; tagline: string; category: string }, suffixLength = 17) {
+  const room = 60 - suffixLength;
+  for (const t of [`${p.title}: ${p.tagline.replace(/\.$/, '')}`, `${p.title}, ${p.category}`]) {
+    if (t.length <= room) return t;
+  }
+  return p.title;
+}
+
 export function projectHref(p: { liveUrl: string | null; repoUrl: string | null }) {
   return p.liveUrl || p.repoUrl || '';
 }
