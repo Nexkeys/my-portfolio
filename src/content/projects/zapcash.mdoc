@@ -1,26 +1,41 @@
 ---
 title: ZapCash
-tagline: Ask your money questions in plain English.
+tagline: Ask your money anything.
 summary: >-
-  A rewards based fintech platform with full account management and a natural
-  language interface that turns plain English questions into validated SQL.
+  A money assistant for Nigerians and their side hustles. Upload a bank
+  statement or add spending by hand, then ask questions in plain English or
+  Pidgin and get straight answers with charts. Being rebuilt from scratch.
 category: Fintech
-role: Full stack engineer
-year: '2025'
-status: live
+role: Creator
+year: '2026'
+status: in-progress
 client: false
 featured: false
 order: 11
-liveUrl: https://zapcash.netlify.app
-repoUrl: ''
+liveUrl: ''
+repoUrl: https://github.com/Nexkeys/zapcash
+cover: /images/projects/zapcash/cover.jpg
 links: []
 stack:
-  - React
-  - Node.js
-  - PostgreSQL
-  - Supabase
+  - TypeScript
+  - React Router
+  - Firebase
+  - SQLite (WASM)
   - Groq
+  - Vercel
 highlights:
-  - Natural language queries converted to structured SQL and validated before running.
-  - Users earn rewards for completing simple online tasks.
+  - >-
+    Private by design: statements are read on the user's own phone, and the AI
+    only sees the question and the table layout, never anyone's transactions.
+    The query it writes is checked, then run on the device.
+  - >-
+    Reads statements from the big Nigerian banks and wallets, sorts every
+    transaction automatically, and shows how much the bank quietly took in
+    stamp duty, SMS alerts and transfer fees.
+  - >-
+    A separate business wallet for side hustles, with profit per month and a
+    year end summary to hand to an accountant.
 ---
+ZapCash started as a small rewards site and is being rebuilt as something people actually need: a calm, honest view of where their money goes. You upload a statement from GTBank, Opay, Kuda, Moniepoint or most other Nigerian banks, and ask things like "How much did I spend on transport last month?" or "Wetin I spend for data this year?".
+
+The rebuild is designed to run on free tiers. Firebase keeps each person's data in sync across devices, a small SQL engine runs inside the browser to answer questions, and a single Vercel function holds the AI key. The design is finished and the build is underway.
