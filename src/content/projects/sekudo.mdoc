@@ -1,0 +1,43 @@
+---
+title: Sekudo
+tagline: A security tester your AI coding tool can drive.
+summary: >-
+  A scope gated DAST engine delivered as an MCP server. Point the AI in Claude
+  Code, Codex or Cursor at an app you own and it runs 34 OWASP Top 10 checks,
+  proves what it finds without damaging anything, and hands back a patch ready
+  report.
+category: Security tool
+role: Creator
+year: '2026'
+status: open-source
+client: false
+featured: false
+order: 12
+liveUrl: ''
+repoUrl: https://github.com/Nexkeys/sekudo
+links: []
+stack:
+  - Python
+  - TypeScript
+  - Node.js
+  - MCP
+  - httpx
+highlights:
+  - >-
+    34 active checks mapped to the OWASP Top 10 (2021): injection, broken
+    access control, cryptographic failures, misconfiguration, vulnerable
+    components, authentication failures and SSRF.
+  - >-
+    Scope gated by design: a target must be listed and authorised in config,
+    and every run confirmed. Anything else is refused.
+  - >-
+    Proves instead of destroys: SQL injection by comparison and timing, inert
+    markers for XSS and template injection, bounded login testing, and no
+    persistence or data taken.
+  - >-
+    Runs in any MCP host with no extra AI key, in Python and Node editions,
+    with JSON and Markdown reports.
+---
+Fast built apps ship fast and leak often: an exposed `.env` file, SQL injection in a hand written query, a login with no rate limit, a `.git` folder served to the world. Sekudo is the MCP server you install so the model already in your editor can test your project the way an attacker would, and hand you the fixes.
+
+It hunts hard, but only inside your fence. Recon maps the surface, the checks probe it, and every finding comes with a harmless proof and the exact place it got in. Testing systems you do not own is illegal, so the scope gate is enforced in code, not left to good intentions.

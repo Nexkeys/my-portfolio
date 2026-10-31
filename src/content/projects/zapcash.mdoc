@@ -2,9 +2,9 @@
 title: ZapCash
 tagline: Ask your money anything.
 summary: >-
-  A money assistant for Nigerians and their side hustles. Upload a bank
-  statement or add spending by hand, then ask questions in plain English or
-  Pidgin and get straight answers with charts. Being rebuilt from scratch.
+  A money assistant for Nigerians and their side hustles. Sign in, see where
+  your money goes, and soon upload a bank statement and ask questions in plain
+  English or Pidgin. Live in early access, built in milestones.
 category: Fintech
 role: Creator
 year: '2026'
@@ -12,7 +12,7 @@ status: in-progress
 client: false
 featured: false
 order: 11
-liveUrl: ''
+liveUrl: https://zapcash-ng.vercel.app
 repoUrl: https://github.com/Nexkeys/zapcash
 cover: /images/projects/zapcash/cover.jpg
 links: []
@@ -21,21 +21,20 @@ stack:
   - React Router
   - Firebase
   - SQLite (WASM)
-  - Groq
   - Vercel
 highlights:
   - >-
-    Private by design: statements are read on the user's own phone, and the AI
-    only sees the question and the table layout, never anyone's transactions.
-    The query it writes is checked, then run on the device.
+    Local first: each person's transactions sync through Firestore, one
+    document per month to stay well inside the free tier, and load into a
+    SQLite database inside the browser for instant, private answers.
   - >-
-    Reads statements from the big Nigerian banks and wallets, sorts every
-    transaction automatically, and shows how much the bank quietly took in
-    stamp duty, SMS alerts and transfer fees.
+    Private by design: statements will be read on the user's own phone, and
+    the AI will only see the question and the table layout, never anyone's
+    transactions.
   - >-
-    A separate business wallet for side hustles, with profit per month and a
-    year end summary to hand to an accountant.
+    A calm, mobile first design in naira green and lime, with light and dark
+    modes, a Personal and Business wallet switch, and big numbers first.
 ---
-ZapCash started as a small rewards site and is being rebuilt as something people actually need: a calm, honest view of where their money goes. You upload a statement from GTBank, Opay, Kuda, Moniepoint or most other Nigerian banks, and ask things like "How much did I spend on transport last month?" or "Wetin I spend for data this year?".
+ZapCash started as a small rewards site and is being rebuilt as something people actually need: a calm, honest view of where their money goes, made for Nigerian banks and Nigerian habits.
 
-The rebuild is designed to run on free tiers. Firebase keeps each person's data in sync across devices, a small SQL engine runs inside the browser to answer questions, and a single Vercel function holds the AI key. The design is finished and the build is underway.
+The first milestone is live: the landing page, sign in with Google or email, the app shell with Home, Activity, Plan and Me, light and dark themes, and the sync layer that keeps a private SQL copy of your data in the browser. Next come statement import for GTBank, Opay, Kuda, Moniepoint and the other big banks, the bank charges tracker, and Ask ZapCash, where you can type "How much did I spend on transport last month?" or "Wetin I spend for data this year?" and get a straight answer.
