@@ -1,26 +1,49 @@
 ---
-title: NexPlay 2.0
-tagline: Six realtime multiplayer games in the browser.
+title: NexPlay
+tagline: Whot, Ayo and party games, played live in the browser.
 summary: >-
-  A realtime two player platform with Tic Tac Toe, Rock Paper Scissors, Connect
-  Four, Word Race, Quick Math and Trivia on Firebase Realtime Database.
+  Eight realtime multiplayer games, including the Nigerian classics Whot and
+  Ayo, with private rooms for 2 to 8 players, quick match, computer opponents
+  at three levels and a live leaderboard. Free, no download, on any phone or
+  laptop.
 category: Gaming
 role: Creator
-year: '2025'
+year: '2026'
 status: live
 client: false
 featured: false
 order: 10
-liveUrl: https://nexplays.netlify.app
-repoUrl: ''
+liveUrl: https://nexplay-ng.vercel.app
+repoUrl: https://github.com/Nexkeys/nexplay
 cover: /images/projects/nexplay/cover.jpg
-links: []
+links:
+  - label: How to play
+    url: https://nexplay-ng.vercel.app/guide
 stack:
-  - JavaScript
+  - TypeScript
   - React
+  - React Router
   - Firebase
+  - Motion
+  - GSAP
 highlights:
-  - Solved race conditions with a host only evaluation architecture.
-  - Fixed mobile double fire events and evicted ghost players on disconnect.
+  - >-
+    Host authoritative engine: the host's device referees every move and sends
+    each player only what they are allowed to see, so Whot hands and trivia
+    answers stay hidden, with sealed picks in Rock Paper Scissors.
+  - >-
+    Both Ayo rule sets (complete fours and capture opposite) and every Whot
+    house rule, from pick two and general market to tender when the market
+    finishes.
+  - >-
+    Rooms that look after themselves: invite codes expire, the next player
+    takes over when the host drops, and turn timers play a random move for
+    anyone who walks away.
+  - >-
+    Computer players at three levels, from alpha beta search in Ayo and Connect
+    Four to a habit reading predictor in Rock Paper Scissors, all tested end to
+    end in self play.
 ---
-Realtime games are where small bugs become very visible. NexPlay moves all game evaluation to the host, so two players can never disagree about who won, and cleans up players who disconnect without leaving.
+NexPlay is game night for the group chat. You open a room, share a five letter code, and everyone is at the same table in seconds: Ayo with seeds you can watch being sown, Whot with the house rules your family argues about, plus Connect Four, Tic Tac Toe, Rock Paper Scissors, Word Race, Quick Math and Trivia for up to eight players.
+
+The rebuild was about trust and flow. Every game is a pure state machine with its own tests and computer players, the host's device referees the match through Firebase Realtime Database, and strict database rules keep private cards and answers private. Rooms expire when nobody uses them, a dropped host is replaced automatically, and an end to end test suite plays every game and mode to the finish on desktop and mobile.
